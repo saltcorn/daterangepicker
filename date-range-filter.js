@@ -130,7 +130,6 @@ const run = async (
         },
         ${set_initial}
         }, function(start, end) {
-          console.log(start,end)
           set_state_fields({
             _fromdate_${name}: start.toDate().toLocaleDateString('en-CA'), 
             _todate_${name}: end.toDate().toLocaleDateString('en-CA')
