@@ -1,0 +1,22 @@
+{
+  "name": "@saltcorn/daterangepicker",
+  "version": "0.1.0",
+  "description": "Date range picker",
+  "main": "index.js",
+  "dependencies": {
+    "@saltcorn/data": "^0.6.2",
+    "@saltcorn/markup": "^0.6.2"
+  },
+  "author": "Tom Nielsen",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^25.1.0"
+  },
+  "repository": "github:saltcorn/daterangepicker",
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}
