@@ -95,17 +95,39 @@ const run = async (
           i({ class: "fas fa-angle-right" })
         )
       : "") +
+    (zoom_btns
+      ? button(
+          {
+            class: "btn btn-sm btn-primary ms-2",
+            disabled: !(from && to),
+            onClick: `drp_zoom_btn(false, '${from}', '${to}')`,
+          },
+
+          i({ class: "fas fa-search-minus" })
+        ) +
+        button(
+          {
+            class: "btn btn-sm btn-primary ms-2",
+            disabled: !(from && to),
+            onClick: `drp_zoom_btn(true, '${from}', '${to}')`,
+          },
+          i({ class: "fas fa-search-plus" })
+        )
+      : "") +
     script(
       domReady(
         `$('#daterangefilter${name}').daterangepicker({
-          ranges: {
+        ranges: {
             'Today': [moment().subtract(1, 'days'), moment()],
             'Yesterday': [moment().subtract(2, 'days'), moment().subtract(1, 'days')],
             'Last 7 Days': [moment().subtract(6, 'days'), moment()],
             'Last 30 Days': [moment().subtract(29, 'days'), moment()],
             'This Month': [moment().startOf('month'), moment().endOf('month')],
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-         },
+          },
+        locale: {
+          format: 'DD/MM/YYYY'
+        },
         ${set_initial}
         }, function(start, end) {
           console.log(start,end)
@@ -130,6 +152,22 @@ const run = async (
               _todate_${name}: newTime.toDate().toLocaleDateString('en-CA')
               })
           }
+        }
+        window.drp_zoom_btn=(dir_in, start, end)=> {
+          let diffDays = moment.duration(moment(end).diff(start)).asDays();
+          let newFrom, newTo;
+          if(dir_in && diffDays<2) return;
+          if(dir_in) {
+            newFrom = moment(start).add(Math.ceil(diffDays/4), 'days')
+            newTo = moment(end).subtract(Math.ceil(diffDays/4), 'days')            
+          } else {
+            newFrom = moment(start).subtract(Math.ceil(diffDays/2), 'days')
+            newTo = moment(end).add(Math.ceil(diffDays/2), 'days')
+          }
+          set_state_fields({
+            _fromdate_${name}: newFrom.toDate().toLocaleDateString('en-CA'), 
+            _todate_${name}: newTo.toDate().toLocaleDateString('en-CA')
+          })        
         }`
       )
     )
