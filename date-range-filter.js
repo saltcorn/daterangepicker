@@ -139,16 +139,14 @@ const run = async (
         window.drp_back_fwd=(dir_back, start, end)=> {
           let diff = moment.duration(moment(end).diff(start));
           if(dir_back) {
-            let newTime = moment(start).subtract(diff)
             set_state_fields({
-              _fromdate_${name}: newTime.toDate().toLocaleDateString('en-CA'), 
-              _todate_${name}: moment(start).toDate().toLocaleDateString('en-CA')
+              _fromdate_${name}: moment(start).subtract(diff/2).toDate().toLocaleDateString('en-CA'), 
+              _todate_${name}: moment(end).subtract(diff/2).toDate().toLocaleDateString('en-CA')
               })
           } else {
-            let newTime = moment(end).add(diff)
             set_state_fields({
-              _fromdate_${name}: moment(end).toDate().toLocaleDateString('en-CA'), 
-              _todate_${name}: newTime.toDate().toLocaleDateString('en-CA')
+              _fromdate_${name}: moment(start).add(diff/2).toDate().toLocaleDateString('en-CA'), 
+              _todate_${name}:  moment(end).add(diff/2).toDate().toLocaleDateString('en-CA')
               })
           }
         }
