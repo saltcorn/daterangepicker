@@ -123,6 +123,22 @@ const configuration_workflow = () =>
           });
         },
       },
+      {
+        name: "Default range",
+        form: async (ctx) => {
+          console.log(ctx);
+          return new Form({
+            fields: [
+              {
+                name: "default_range",
+                label: "Default range",
+                type: "String",
+                attributes: { options: ctx.ranges.map((r) => r.name) },
+              },
+            ],
+          });
+        },
+      },
     ],
   });
 const mkBaseMoment = (base) => {
@@ -142,7 +158,7 @@ const mkRange = ({ name, to_base, to_offset, from_base, from_offset }) =>
 const run = async (
   table_id,
   viewname,
-  { date_field, fwd_back_btns, zoom_btns, ranges },
+  { date_field, fwd_back_btns, zoom_btns, ranges, default_range },
   state,
   extra
 ) => {
@@ -152,10 +168,26 @@ const run = async (
   const name = text_attr(field.name);
   const from = state[`_fromdate_${name}`];
   const to = state[`_todate_${name}`];
+  const def_range_obj = default_range
+    ? ranges.find((r) => r.name === default_range)
+    : null;
+  const def_from = def_range_obj
+    ? `moment()${mkBaseMoment(def_range_obj.from_base)}${mkOffsetMoment(
+        def_range_obj.from_offset
+      )}`
+    : null;
+  const def_to = def_range_obj
+    ? `moment()${mkBaseMoment(def_range_obj.to_base)}${mkOffsetMoment(
+        def_range_obj.to_offset
+      )}`
+    : null;
   const set_initial =
     from && to
       ? `startDate: moment("${from}"), 
          endDate: moment("${to}"),`
+      : def_range_obj
+      ? `startDate: ${def_from}, 
+         endDate: ${def_to},`
       : "";
   return (
     input({
@@ -169,8 +201,10 @@ const run = async (
       ? button(
           {
             class: "btn btn-sm btn-primary ms-2",
-            disabled: !(from && to),
-            onClick: `drp_back_fwd(true, '${from}', '${to}')`,
+            disabled: !((from && to) || def_range_obj),
+            onClick: `drp_back_fwd(true, ${from ? `'${from}'` : def_from},  ${
+              to ? `'${to}'` : def_to
+            })`,
           },
 
           i({ class: "fas fa-angle-left" })
@@ -178,8 +212,10 @@ const run = async (
         button(
           {
             class: "btn btn-sm btn-primary ms-2",
-            disabled: !(from && to),
-            onClick: `drp_back_fwd(false, '${from}', '${to}')`,
+            disabled: !((from && to) || def_range_obj),
+            onClick: `drp_back_fwd(false, ${from ? `'${from}'` : def_from},  ${
+              to ? `'${to}'` : def_to
+            })`,
           },
           i({ class: "fas fa-angle-right" })
         )
@@ -188,8 +224,10 @@ const run = async (
       ? button(
           {
             class: "btn btn-sm btn-primary ms-2",
-            disabled: !(from && to),
-            onClick: `drp_zoom_btn(false, '${from}', '${to}')`,
+            disabled: !((from && to) || def_range_obj),
+            onClick: `drp_zoom_btn(false, ${from ? `'${from}'` : def_from},  ${
+              to ? `'${to}'` : def_to
+            })`,
           },
 
           i({ class: "fas fa-search-minus" })
@@ -197,8 +235,10 @@ const run = async (
         button(
           {
             class: "btn btn-sm btn-primary ms-2",
-            disabled: !(from && to),
-            onClick: `drp_zoom_btn(true, '${from}', '${to}')`,
+            disabled: !((from && to) || def_range_obj),
+            onClick: `drp_zoom_btn(true,  ${from ? `'${from}'` : def_from},  ${
+              to ? `'${to}'` : def_to
+            })`,
           },
           i({ class: "fas fa-search-plus" })
         )
