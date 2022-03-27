@@ -2,6 +2,8 @@ const User = require("@saltcorn/data/models/user");
 const Table = require("@saltcorn/data/models/table");
 const Form = require("@saltcorn/data/models/form");
 const Workflow = require("@saltcorn/data/models/workflow");
+const FieldRepeat = require("@saltcorn/data/models/fieldrepeat");
+
 const {
   input,
   div,
@@ -48,15 +50,107 @@ const configuration_workflow = () =>
           });
         },
       },
+      {
+        name: "Preset ranges",
+        form: async () => {
+          return new Form({
+            fields: [
+              new FieldRepeat({
+                name: "ranges",
+                label: "Preset ranges",
+                fields: [
+                  {
+                    name: "name",
+                    label: "Name",
+                    type: "String",
+                    required: true,
+                  },
+                  {
+                    name: "from_offset",
+                    label: "From offset",
+                    type: "Integer",
+                    sublabel:
+                      "Positive or negative number of days to add or subtract",
+                    required: true,
+                  },
+                  {
+                    name: "from_base",
+                    label: "on",
+                    type: "String",
+                    required: true,
+                    attributes: {
+                      options: [
+                        "Today",
+                        "StartOfWeek",
+                        "EndOfWeek",
+                        "StartOfMonth",
+                        "EndOfMonth",
+                        "StartOfQuarter",
+                        "EndOfQuarter",
+                        "StartOfYear",
+                        "EndOfYear",
+                      ],
+                    },
+                  },
+                  {
+                    name: "to_offset",
+                    label: "To offset",
+                    type: "Integer",
+                    required: true,
+                  },
+                  {
+                    name: "to_base",
+                    label: "on",
+                    type: "String",
+                    required: true,
+                    attributes: {
+                      options: [
+                        "Today",
+                        "StartOfWeek",
+                        "EndOfWeek",
+                        "StartOfMonth",
+                        "EndOfMonth",
+                        "StartOfQuarter",
+                        "EndOfQuarter",
+                        "StartOfYear",
+                        "EndOfYear",
+                      ],
+                    },
+                  },
+                ],
+              }),
+            ],
+          });
+        },
+      },
     ],
   });
+const mkBaseMoment = (base) => {
+  if (!base || base === "Today") return "";
+  if (base.startsWith("StartOf"))
+    return `.startOf('${base.replace("StartOf", "").toLowerCase()}')`;
+  if (base.startsWith("EndOf"))
+    return `.endOf('${base.replace("EndOf", "").toLowerCase()}')`;
+};
+const mkOffsetMoment = (n) =>
+  n === 0 || typeof n === "undefined"
+    ? ``
+    : n < 0
+    ? `.subtract(${-n}, 'days')`
+    : `.add(${n}, 'days')`;
+
+const mkRange = ({ name, to_base, to_offset, from_base, from_offset }) =>
+  `'${name}': [moment()${mkBaseMoment(from_base)}${mkOffsetMoment(from_offset)},
+               moment()${mkBaseMoment(to_base)}${mkOffsetMoment(to_offset)} ]`;
+
 const run = async (
   table_id,
   viewname,
-  { date_field, fwd_back_btns, zoom_btns },
+  { date_field, fwd_back_btns, zoom_btns, ranges },
   state,
   extra
 ) => {
+  console.log(ranges);
   const table = await Table.findOne({ id: table_id });
   const fields = await table.getFields();
   const field = fields.find((f) => f.name === date_field);
@@ -118,12 +212,7 @@ const run = async (
       domReady(
         `$('#daterangefilter${name}').daterangepicker({
         ranges: {
-            'Today': [moment().subtract(1, 'days'), moment()],
-            'Yesterday': [moment().subtract(2, 'days'), moment().subtract(1, 'days')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            ${ranges.map(mkRange).join(",\n")}         
           },
         locale: {
           format: 'DD/MM/YYYY'
