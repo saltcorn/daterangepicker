@@ -133,11 +133,7 @@ const mkBaseMoment = (base) => {
     return `.endOf('${base.replace("EndOf", "").toLowerCase()}')`;
 };
 const mkOffsetMoment = (n) =>
-  n === 0 || typeof n === "undefined"
-    ? ``
-    : n < 0
-    ? `.subtract(${-n}, 'days')`
-    : `.add(${n}, 'days')`;
+  !n ? `` : n < 0 ? `.subtract(${-n}, 'days')` : `.add(${n}, 'days')`;
 
 const mkRange = ({ name, to_base, to_offset, from_base, from_offset }) =>
   `'${name}': [moment()${mkBaseMoment(from_base)}${mkOffsetMoment(from_offset)},
@@ -150,7 +146,6 @@ const run = async (
   state,
   extra
 ) => {
-  console.log(ranges);
   const table = await Table.findOne({ id: table_id });
   const fields = await table.getFields();
   const field = fields.find((f) => f.name === date_field);
