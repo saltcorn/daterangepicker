@@ -289,6 +289,14 @@ const run = async (
             _fromdate_${name}: newFrom.toDate().toLocaleDateString('en-CA'), 
             _todate_${name}: newTo.toDate().toLocaleDateString('en-CA')
           })        
+        }
+        ${
+          def_range_obj && !(from && to)
+            ? `set_state_fields({
+          _fromdate_${name}: ${def_from}.toDate().toLocaleDateString('en-CA'), 
+          _todate_${name}: ${def_to}.toDate().toLocaleDateString('en-CA')
+        })`
+            : ""
         }`
       )
     )
