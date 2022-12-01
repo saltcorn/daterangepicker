@@ -126,7 +126,6 @@ const configuration_workflow = () =>
       {
         name: "Default range",
         form: async (ctx) => {
-          console.log(ctx);
           return new Form({
             fields: [
               {
