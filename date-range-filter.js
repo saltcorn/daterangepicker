@@ -188,6 +188,12 @@ const run = async (
       ? `startDate: ${def_from}, 
          endDate: ${def_to},`
       : "";
+  const setter = (start, end) =>
+    `set_state_fields({
+    _fromdate_${name}: ${start}.toDate().toLocaleDateString('en-CA'), 
+    _todate_${name}: ${end}.toDate().toLocaleDateString('en-CA')
+    })`;
+
   return (
     input({
       type: "text",
@@ -253,24 +259,20 @@ const run = async (
         },
         ${set_initial}
         }, function(start, end) {
-          set_state_fields({
-            _fromdate_${name}: start.toDate().toLocaleDateString('en-CA'), 
-            _todate_${name}: end.toDate().toLocaleDateString('en-CA')
-            })
-                      
+          ${setter("start", "end")}
         });
         window.drp_back_fwd=(dir_back, start, end)=> {
           let diff = moment.duration(moment(end).diff(start));
           if(dir_back) {
-            set_state_fields({
-              _fromdate_${name}: moment(start).subtract(diff/4).toDate().toLocaleDateString('en-CA'), 
-              _todate_${name}: moment(end).subtract(diff/4).toDate().toLocaleDateString('en-CA')
-              })
+            ${setter(
+              "moment(start).subtract(diff/4)",
+              "moment(end).subtract(diff/4)"
+            )}           
           } else {
-            set_state_fields({
-              _fromdate_${name}: moment(start).add(diff/4).toDate().toLocaleDateString('en-CA'), 
-              _todate_${name}:  moment(end).add(diff/4).toDate().toLocaleDateString('en-CA')
-              })
+            ${setter(
+              "moment(start).add(diff/4)",
+              "moment(end).add(diff/4)"
+            )}           
           }
         }
         window.drp_zoom_btn=(dir_in, start, end)=> {
@@ -284,19 +286,9 @@ const run = async (
             newFrom = moment(start).subtract(Math.ceil(diffDays/2), 'days')
             newTo = moment(end).add(Math.ceil(diffDays/2), 'days')
           }
-          set_state_fields({
-            _fromdate_${name}: newFrom.toDate().toLocaleDateString('en-CA'), 
-            _todate_${name}: newTo.toDate().toLocaleDateString('en-CA')
-          })        
+          ${setter("newFrom", "newTo")}
         }
-        ${
-          def_range_obj && !(from && to)
-            ? `set_state_fields({
-          _fromdate_${name}: ${def_from}.toDate().toLocaleDateString('en-CA'), 
-          _todate_${name}: ${def_to}.toDate().toLocaleDateString('en-CA')
-        })`
-            : ""
-        }`
+        ${def_range_obj && !(from && to) ? setter(def_from, def_to) : ""}`
       )
     )
   );
