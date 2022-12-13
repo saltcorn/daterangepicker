@@ -32,6 +32,18 @@ const configuration_workflow = () =>
                 label: "Date field",
                 type: "String",
                 required: true,
+                sublabel:
+                  "If selecting rows by a beginning and an end, use this for the start field",
+                attributes: {
+                  options: date_fields.join(),
+                },
+              },
+              {
+                name: "end_date_field",
+                label: "End date field",
+                type: "String",
+                sublabel:
+                  "If selecting rows with the beginning and an end, use this for the end field",
                 attributes: {
                   options: date_fields.join(),
                 },
@@ -157,7 +169,14 @@ const mkRange = ({ name, to_base, to_offset, from_base, from_offset }) =>
 const run = async (
   table_id,
   viewname,
-  { date_field, fwd_back_btns, zoom_btns, ranges, default_range },
+  {
+    date_field,
+    end_date_field,
+    fwd_back_btns,
+    zoom_btns,
+    ranges,
+    default_range,
+  },
   state,
   extra
 ) => {
@@ -165,7 +184,8 @@ const run = async (
   const fields = await table.getFields();
   const field = fields.find((f) => f.name === date_field);
   const name = text_attr(field.name);
-  const from = state[`_fromdate_${name}`];
+  const from =
+    state[`_fromdate_${name}`] || state[`_fromdate_${end_date_field}`];
   const to = state[`_todate_${name}`];
   const def_range_obj = default_range
     ? ranges.find((r) => r.name === default_range)
@@ -189,7 +209,12 @@ const run = async (
          endDate: ${def_to},`
       : "";
   const setter = (start, end) =>
-    `set_state_fields({
+    end_date_field
+      ? `set_state_fields({
+        _fromdate_${end_date_field}: ${start}.toDate().toLocaleDateString('en-CA'), 
+        _todate_${name}: ${end}.toDate().toLocaleDateString('en-CA')
+        })`
+      : `set_state_fields({
     _fromdate_${name}: ${start}.toDate().toLocaleDateString('en-CA'), 
     _todate_${name}: ${end}.toDate().toLocaleDateString('en-CA')
     })`;
