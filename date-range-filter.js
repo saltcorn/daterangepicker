@@ -263,13 +263,13 @@ const run = async (
           let diff = moment.duration(moment(end).diff(start));
           if(dir_back) {
             set_state_fields({
-              _fromdate_${name}: moment(start).subtract(diff/2).toDate().toLocaleDateString('en-CA'), 
-              _todate_${name}: moment(end).subtract(diff/2).toDate().toLocaleDateString('en-CA')
+              _fromdate_${name}: moment(start).subtract(diff/4).toDate().toLocaleDateString('en-CA'), 
+              _todate_${name}: moment(end).subtract(diff/4).toDate().toLocaleDateString('en-CA')
               })
           } else {
             set_state_fields({
-              _fromdate_${name}: moment(start).add(diff/2).toDate().toLocaleDateString('en-CA'), 
-              _todate_${name}:  moment(end).add(diff/2).toDate().toLocaleDateString('en-CA')
+              _fromdate_${name}: moment(start).add(diff/4).toDate().toLocaleDateString('en-CA'), 
+              _todate_${name}:  moment(end).add(diff/4).toDate().toLocaleDateString('en-CA')
               })
           }
         }
