@@ -213,11 +213,11 @@ const run = async (
       ? `set_state_fields({
         _fromdate_${end_date_field}: ${start}.toDate().toLocaleDateString('en-CA'), 
         _todate_${name}: ${end}.toDate().toLocaleDateString('en-CA')
-        })`
+        }, true)`
       : `set_state_fields({
     _fromdate_${name}: ${start}.toDate().toLocaleDateString('en-CA'), 
     _todate_${name}: ${end}.toDate().toLocaleDateString('en-CA')
-    })`;
+    },true)`;
 
   return (
     input({
