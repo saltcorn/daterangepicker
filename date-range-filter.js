@@ -43,7 +43,7 @@ const configuration_workflow = () =>
                 label: "End date field",
                 type: "String",
                 sublabel:
-                  "If selecting rows with the beginning and an end, use this for the end field",
+                  "Optional. If selecting rows with the beginning and an end, use this for the end field",
                 attributes: {
                   options: date_fields.join(),
                 },
@@ -66,9 +66,11 @@ const configuration_workflow = () =>
         name: "Preset ranges",
         form: async () => {
           return new Form({
+            blurb: "Specify the date range presets, if any.",
             fields: [
               new FieldRepeat({
                 name: "ranges",
+                defaultNone: true,
                 label: "Preset ranges",
                 fields: [
                   {
@@ -137,6 +139,7 @@ const configuration_workflow = () =>
       },
       {
         name: "Default range",
+        onlyWhen: (ctx) => ctx?.ranges?.length,
         form: async (ctx) => {
           return new Form({
             fields: [
@@ -226,6 +229,7 @@ const run = async (
       style: { width: "20em" },
       name: `daterangefilter${name}`,
       id: `daterangefilter${name}`,
+      autocomplete: "off",
     }) +
     (fwd_back_btns
       ? button(
@@ -276,9 +280,13 @@ const run = async (
     script(
       domReady(
         `$('#daterangefilter${name}').daterangepicker({
-        ranges: {
+        ${
+          ranges?.length
+            ? `ranges: {
             ${ranges.map(mkRange).join(",\n")}         
-          },
+          },`
+            : ""
+        }
         locale: {
           format: 'DD/MM/YYYY'
         },
