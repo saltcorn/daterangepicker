@@ -230,6 +230,12 @@ const run = async (
       name: `daterangefilter${name}`,
       id: `daterangefilter${name}`,
       autocomplete: "off",
+      value:
+        from && to
+          ? `${new Date(from).toLocaleDateString("en-GB")} - ${new Date(
+              to
+            ).toLocaleDateString("en-GB")}`
+          : undefined,
     }) +
     (fwd_back_btns
       ? button(
@@ -287,13 +293,31 @@ const run = async (
           },`
             : ""
         }
+        ${!def_range_obj ? `autoUpdateInput: false,` : ""}
         locale: {
-          format: 'DD/MM/YYYY'
+          format: 'DD/MM/YYYY',
+          ${!ranges?.length ? `cancelLabel: "${extra.req.__("Clear")}"` : ""}
         },
         ${set_initial}
         }, function(start, end) {
+          console.log("setter")
           ${setter("start", "end")}
         });
+        ${
+          !def_range_obj
+            ? `$('#daterangefilter${name}').on('apply.daterangepicker', function(ev, picker) {
+          console.log("pick")
+
+          $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+    
+        $('#daterangefilter${name}').on('cancel.daterangepicker', function(ev, picker) {
+          console.log("clear")
+
+          $(this).val('');
+        });`
+            : ""
+        }
         window.drp_back_fwd=(dir_back, start, end)=> {
           let diff = moment.duration(moment(end).diff(start));
           if(dir_back) {
