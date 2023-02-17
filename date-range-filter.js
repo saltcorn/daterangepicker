@@ -139,15 +139,24 @@ const configuration_workflow = () =>
       },
       {
         name: "Default range",
-        onlyWhen: (ctx) => ctx?.ranges?.length,
         form: async (ctx) => {
           return new Form({
             fields: [
+              ...(ctx?.ranges?.length
+                ? [
+                    {
+                      name: "default_range",
+                      label: "Default range",
+                      type: "String",
+                      attributes: { options: ctx.ranges.map((r) => r.name) },
+                    },
+                  ]
+                : []),
               {
-                name: "default_range",
-                label: "Default range",
+                name: "neutral_label",
+                label: "Neutral label",
                 type: "String",
-                attributes: { options: ctx.ranges.map((r) => r.name) },
+                showIf: ctx?.ranges?.length ? { default_range: "" } : undefined,
               },
             ],
           });
@@ -179,6 +188,7 @@ const run = async (
     zoom_btns,
     ranges,
     default_range,
+    neutral_label,
   },
   state,
   extra
@@ -221,6 +231,15 @@ const run = async (
     _fromdate_${name}: ${start}.toDate().toLocaleDateString('en-CA'), 
     _todate_${name}: ${end}.toDate().toLocaleDateString('en-CA')
     },true)`;
+  const unsetter = end_date_field
+    ? `set_state_fields({
+        _fromdate_${end_date_field}: {unset: true}, 
+        _todate_${name}: {unset: true}
+        }, true)`
+    : `set_state_fields({
+    _fromdate_${name}: {unset: true}, 
+    _todate_${name}: {unset: true}
+    },true)`;
 
   return (
     input({
@@ -235,7 +254,7 @@ const run = async (
           ? `${new Date(from).toLocaleDateString("en-GB")} - ${new Date(
               to
             ).toLocaleDateString("en-GB")}`
-          : undefined,
+          : neutral_label,
     }) +
     (fwd_back_btns
       ? button(
@@ -315,6 +334,7 @@ const run = async (
           console.log("clear")
 
           $(this).val('');
+          ${unsetter}
         });`
             : ""
         }
