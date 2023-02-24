@@ -54,6 +54,18 @@ const configuration_workflow = () =>
                 type: "Bool",
               },
               {
+                name: "fwd_back_amount",
+                label: "Forward/back amount",
+                input_type: "select",
+                options: [
+                  { label: "1x current range", value: 1 },
+                  { label: "1/2x current range", value: 0.5 },
+                  { label: "1/3x current range", value: 0.333 },
+                  { label: "1/4x current range", value: 0.25 },
+                ],
+                showIf: { fwd_back_btns: true },
+              },
+              {
                 name: "zoom_btns",
                 label: "Zoom in/out buttons",
                 type: "Bool",
@@ -189,6 +201,7 @@ const run = async (
     ranges,
     default_range,
     neutral_label,
+    fwd_back_amount,
   },
   state,
   extra
@@ -197,6 +210,7 @@ const run = async (
   const fields = await table.getFields();
   const field = fields.find((f) => f.name === date_field);
   const name = text_attr(field.name);
+  const fwd_back_amount_n = +fwd_back_amount || 0.25;
   const from =
     state[`_fromdate_${name}`] || state[`_fromdate_${end_date_field}`];
   const to = state[`_todate_${name}`];
@@ -342,13 +356,13 @@ const run = async (
           let diff = moment.duration(moment(end).diff(start));
           if(dir_back) {
             ${setter(
-              "moment(start).subtract(diff/4)",
-              "moment(end).subtract(diff/4)"
+              `moment(start).subtract(diff*${fwd_back_amount_n})`,
+              `moment(end).subtract(diff*${fwd_back_amount_n})`
             )}           
           } else {
             ${setter(
-              "moment(start).add(diff/4)",
-              "moment(end).add(diff/4)"
+              `moment(start).add(diff*${fwd_back_amount_n})`,
+              `moment(end).add(diff*${fwd_back_amount_n})`
             )}           
           }
         }
