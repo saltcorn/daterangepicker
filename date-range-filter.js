@@ -18,7 +18,7 @@ const configuration_workflow = () =>
   new Workflow({
     steps: [
       {
-        name: "Layout",
+        name: "Fields",
         form: async (context) => {
           const table = await Table.findOne({ id: context.table_id });
           const fields = await table.getFields();
