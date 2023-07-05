@@ -143,6 +143,12 @@ const configuration_workflow = () =>
                       ],
                     },
                   },
+                  {
+                    name: "snap_mondays",
+                    label: "Snap to Mondays",
+                    type: "String",
+                    attributes: { options: ["Last before", "First after"] },
+                  },
                 ],
               }),
             ],
@@ -186,9 +192,25 @@ const mkBaseMoment = (base) => {
 const mkOffsetMoment = (n) =>
   !n ? `` : n < 0 ? `.subtract(${-n}, 'days')` : `.add(${n}, 'days')`;
 
-const mkRange = ({ name, to_base, to_offset, from_base, from_offset }) =>
-  `'${name}': [moment()${mkBaseMoment(from_base)}${mkOffsetMoment(from_offset)},
-               moment()${mkBaseMoment(to_base)}${mkOffsetMoment(to_offset)} ]`;
+const snapMonday = (snap) => {
+  if (snap === "Last before") return ".isoWeekday(1)";
+  if (snap === "First after") return ".isoWeekday(7)";
+  return "";
+};
+const mkRange = ({
+  name,
+  to_base,
+  to_offset,
+  from_base,
+  from_offset,
+  snap_mondays,
+}) =>
+  `'${name}': [moment()${mkBaseMoment(from_base)}${mkOffsetMoment(
+    from_offset
+  )}${snapMonday(snap_mondays)},
+               moment()${mkBaseMoment(to_base)}${mkOffsetMoment(
+    to_offset
+  )}${snapMonday(snap_mondays)} ]`;
 
 const run = async (
   table_id,
@@ -220,12 +242,12 @@ const run = async (
   const def_from = def_range_obj
     ? `moment()${mkBaseMoment(def_range_obj.from_base)}${mkOffsetMoment(
         def_range_obj.from_offset
-      )}`
+      )}${snapMonday(def_range_obj.snap_mondays)}`
     : null;
   const def_to = def_range_obj
     ? `moment()${mkBaseMoment(def_range_obj.to_base)}${mkOffsetMoment(
         def_range_obj.to_offset
-      )}`
+      )}${snapMonday(def_range_obj.snap_mondays)}`
     : null;
   const set_initial =
     from && to
