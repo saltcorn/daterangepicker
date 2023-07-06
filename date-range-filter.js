@@ -194,7 +194,7 @@ const mkOffsetMoment = (n) =>
 
 const snapMonday = (snap) => {
   if (snap === "Last before") return ".isoWeekday(1)";
-  if (snap === "First after") return ".isoWeekday(7)";
+  if (snap === "First after") return ".isoWeekday(8)";
   return "";
 };
 const mkRange = ({
