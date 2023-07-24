@@ -231,6 +231,7 @@ const run = async (
   const table = await Table.findOne({ id: table_id });
   const fields = await table.getFields();
   const field = fields.find((f) => f.name === date_field);
+  if (!field) return "";
   const name = text_attr(field.name);
   const fwd_back_amount_n = +fwd_back_amount || 0.25;
   const from =
