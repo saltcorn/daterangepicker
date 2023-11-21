@@ -1,6 +1,6 @@
 {
   "name": "@saltcorn/daterangepicker",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Date range picker",
   "main": "index.js",
   "dependencies": {
