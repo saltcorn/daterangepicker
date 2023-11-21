@@ -70,6 +70,11 @@ const configuration_workflow = () =>
                 label: "Zoom in/out buttons",
                 type: "Bool",
               },
+              {
+                name: "placeholder",
+                label: "Placeholder",
+                type: "String",
+              },
             ],
           });
         },
@@ -224,6 +229,7 @@ const run = async (
     default_range,
     neutral_label,
     fwd_back_amount,
+    placeholder,
   },
   state,
   extra
@@ -286,6 +292,7 @@ const run = async (
       name: `daterangefilter${name}`,
       id: `daterangefilter${name}`,
       autocomplete: "off",
+      placeholder,
       value:
         from && to
           ? `${new Date(from).toLocaleDateString("en-GB")} - ${new Date(
