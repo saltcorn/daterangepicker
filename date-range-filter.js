@@ -214,8 +214,12 @@ const mkBaseMoment = (base) => {
   if (base.startsWith("EndOf"))
     return `.endOf('${base.replace("EndOf", "").toLowerCase()}')`;
 };
-const mkOffsetMoment = (n) =>
-  !n ? `` : n < 0 ? `.subtract(${-n}, 'days')` : `.add(${n}, 'days')`;
+const mkOffsetMoment = (n, units) =>
+  !n
+    ? ``
+    : n < 0
+    ? `.subtract(${-n}, '${units || "days"}')`
+    : `.add(${n}, '${units || "days"}')`;
 
 const snapMonday = (snap) => {
   if (snap === "Last before") return ".isoWeekday(1)";
@@ -226,15 +230,19 @@ const mkRange = ({
   name,
   to_base,
   to_offset,
+  to_offset_units,
   from_base,
   from_offset,
+  from_offset_units,
   snap_mondays,
 }) =>
   `'${name}': [moment()${mkBaseMoment(from_base)}${mkOffsetMoment(
-    from_offset
+    from_offset,
+    from_offset_units
   )}${snapMonday(snap_mondays)},
                moment()${mkBaseMoment(to_base)}${mkOffsetMoment(
-    to_offset
+    to_offset,
+    to_offset_units
   )}${snapMonday(snap_mondays)} ]`;
 
 const run = async (
