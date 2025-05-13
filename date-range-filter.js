@@ -101,8 +101,18 @@ const configuration_workflow = () =>
                     label: "From offset",
                     type: "Integer",
                     sublabel:
-                      "Positive or negative number of days to add or subtract",
+                      "Positive or negative number of units to add or subtract",
                     required: true,
+                    attributes: { asideNext: true },
+                  },
+                  {
+                    name: "from_offset_units",
+                    label: "From offset units",
+                    type: "String",
+                    required: true,
+                    attributes: {
+                      options: ["days", "weeks", "months", "quarters", "years"],
+                    },
                   },
                   {
                     name: "from_base",
@@ -128,6 +138,16 @@ const configuration_workflow = () =>
                     label: "To offset",
                     type: "Integer",
                     required: true,
+                    attributes: { asideNext: true },
+                  },
+                  {
+                    name: "to_offset_units",
+                    label: "To offset units",
+                    type: "String",
+                    required: true,
+                    attributes: {
+                      options: ["days", "weeks", "months", "quarters", "years"],
+                    },
                   },
                   {
                     name: "to_base",
