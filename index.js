@@ -1,12 +1,18 @@
 const headers = [
   {
-    script: "/plugins/public/daterangepicker/moment.min.js",
+    script: `/plugins/public/daterangepicker@${
+        require("./package.json").version
+      }/moment.min.js`,
   },
   {
-    script: "/plugins/public/daterangepicker/daterangepicker.min.js",
+    script: `/plugins/public/daterangepicker@${
+        require("./package.json").version
+      }/daterangepicker.min.js`,
   },
   {
-    css: "/plugins/public/daterangepicker/daterangepicker.css",
+    css: `/plugins/public/daterangepicker@${
+        require("./package.json").version
+      }/daterangepicker.css`,
   },
 ];
 
