@@ -1,18 +1,21 @@
 const headers = [
   {
     script: `/plugins/public/daterangepicker@${
-        require("./package.json").version
-      }/moment.min.js`,
+      require("./package.json").version
+    }/moment.min.js`,
+    onlyViews: ["Date Range Picker"],
   },
   {
     script: `/plugins/public/daterangepicker@${
-        require("./package.json").version
-      }/daterangepicker.min.js`,
+      require("./package.json").version
+    }/daterangepicker.min.js`,
+    onlyViews: ["Date Range Picker"],
   },
   {
     css: `/plugins/public/daterangepicker@${
-        require("./package.json").version
-      }/daterangepicker.css`,
+      require("./package.json").version
+    }/daterangepicker.css`,
+    onlyViews: ["Date Range Picker"],
   },
 ];
 
